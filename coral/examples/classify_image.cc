@@ -57,5 +57,11 @@ int main(int argc, char* argv[]) {
   }
 
   std::cout << "Inference Time: " << seconds.count() << std::endl;
+          
+  start_time = std::chrono::steady_clock::now();
+  CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
+  seconds = std::chrono::steady_clock::now() - start_time;
+  std::cout << "Second inference Time: " << seconds.count() << std::endl;
+          
   return 0;
 }
