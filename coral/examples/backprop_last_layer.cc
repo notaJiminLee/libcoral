@@ -174,12 +174,18 @@ float EvaluateTrainedModel(const flatbuffers::FlatBufferBuilder& fbb,
 
   auto input = MutableTensorData<char>(*interpreter->input_tensor(0));
   int num_hits = 0;
+  
+  const auto& start_time = std::chrono::steady_clock::now(); // start time
   for (auto& entry : label_and_paths) {
     ReadFileToOrDie(entry.image_path, input.data(), input.size());
     CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
     auto top = GetTopClassificationResult(*interpreter);
     if (top.id == entry.label) ++num_hits;
   }
+  std::chrono::duration<double> seconds =
+      std::chrono::steady_clock::now() - start_time;
+  std::cout << "Inference Time: " << seconds.count() << std::endl;
+  
   return static_cast<float>(num_hits) / label_and_paths.size();
 }
 
@@ -231,6 +237,9 @@ void TrainAndEvaluate(const std::string& embedding_extractor_path,
   flatbuffers::FlatBufferBuilder fbb;
   regression_model.AppendLayersToEmbeddingExtractor(*model->GetModel(), &fbb);
 
+  std::vector<LabelAndPath> custom_label_and_paths;
+	custom_label_and_paths.push_back({ 1, "rose.rgb" });
+  
   // Evaluate the trained model.
   LOG(INFO) << "Accuracy on training data: "
             << EvaluateTrainedModel(fbb, training_label_and_paths);
@@ -238,6 +247,8 @@ void TrainAndEvaluate(const std::string& embedding_extractor_path,
             << EvaluateTrainedModel(fbb, validation_label_and_paths);
   LOG(INFO) << "Accuracy on test data: "
             << EvaluateTrainedModel(fbb, test_label_and_paths);
+  LOG(INFO) << "Accuracy on custom data:(rose) "
+            << EvaluateTrainedModel(fbb, custom_label_and_paths);
 }
 
 }  // namespace
