@@ -14,7 +14,7 @@
 #include "glog/logging.h"
 #include "tensorflow/lite/interpreter.h"
 
-#include <time.h>
+#include <chrono>
 
 ABSL_FLAG(std::string, model_path, "mobilenet_v1_1.0_224_quant_edgetpu.tflite",
           "Path to the tflite model.");
@@ -27,8 +27,6 @@ ABSL_FLAG(std::string, labels_path, "imagenet_labels.txt",
 
 int main(int argc, char* argv[]) {
   absl::ParseCommandLine(argc, argv);
-  clock_t start, end;
-  double result;
           
   // Load the model.
   const auto model = coral::LoadModelOrDie(absl::GetFlag(FLAGS_model_path));
@@ -43,9 +41,10 @@ int main(int argc, char* argv[]) {
   auto input = coral::MutableTensorData<char>(*interpreter->input_tensor(0));
   coral::ReadFileToOrDie(absl::GetFlag(FLAGS_image_path), input.data(),
                          input.size());
-  start = clock();
+  const auto& start_time = std::chrono::steady_clock::now();
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
-  end = clock();
+  std::chrono::duration<double> seconds =
+      std::chrono::steady_clock::now() - start_time;
 
   // Read the label file.
   auto labels = coral::ReadLabelFile(absl::GetFlag(FLAGS_labels_path));
@@ -56,7 +55,7 @@ int main(int argc, char* argv[]) {
     std::cout << labels[result.id] << std::endl;
     std::cout << "Score: " << result.score << std::endl;
   }
-  result = (double)(end - start);
-  std::cout << result << std::endl;
+
+  std::cout << "Inference Time: " << seconds.count() << std::endl;
   return 0;
 }
