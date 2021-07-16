@@ -42,7 +42,9 @@ int main(int argc, char* argv[]) {
   //coral::ReadFileToOrDie(absl::GetFlag(FLAGS_image_path), input.data(),
   //                       input.size());
   const int inputarr[224][224][3] = { 1, };
-  memcpy(*interpreter->input_tensor(0), inputarr, sizeof(inputarr)/sizeof(int))
+  int interpreter_input = interpreter->inputs()[0];
+  TfLiteTensor* inputTensor = interpreter->tensor(interpreter_input);
+  memcpy(inputTensor->data.int8, inputarr, sizeof(inputarr)/sizeof(int))
           
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
   const auto& start_time = std::chrono::steady_clock::now();
