@@ -41,6 +41,9 @@ int main(int argc, char* argv[]) {
   auto input = coral::MutableTensorData<char>(*interpreter->input_tensor(0));
   coral::ReadFileToOrDie(absl::GetFlag(FLAGS_image_path), input.data(),
                          input.size());
+          
+  std::cout << "input : " << input.data() << std::endl;  // Custom code
+          
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
   const auto& start_time = std::chrono::steady_clock::now();
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
