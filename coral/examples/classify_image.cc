@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
   auto input = coral::MutableTensorData<char>(*interpreter->input_tensor(0));
   //coral::ReadFileToOrDie(absl::GetFlag(FLAGS_image_path), input.data(),
   //                       input.size());
-  const inputarr[224, 224, 3] = {1, };
+  const int inputarr[224, 224, 3] = {1, };
   coral::ReadFileToOrDie(inputarr, input.data(), input.size());
           
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
