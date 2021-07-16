@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
   const int inputarr[224][224][3] = { 1, };
   int interpreter_input = interpreter->inputs()[0];
   TfLiteTensor* inputTensor = interpreter->tensor(interpreter_input);
-  memcpy(inputTensor->data.int8, inputarr, sizeof(inputarr)/sizeof(int))
+  memcpy(inputTensor->data.int8, inputarr, sizeof(inputarr)/sizeof(int));
           
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
   const auto& start_time = std::chrono::steady_clock::now();
