@@ -39,10 +39,10 @@ int main(int argc, char* argv[]) {
 
   // Read the image to input tensor.
   auto input = coral::MutableTensorData<char>(*interpreter->input_tensor(0));
-  coral::ReadFileToOrDie(absl::GetFlag(FLAGS_image_path), input.data(),
-                         input.size());
-          
-  std::cout << "input : " << input.data() << std::endl;  // Custom code
+  //coral::ReadFileToOrDie(absl::GetFlag(FLAGS_image_path), input.data(),
+  //                       input.size());
+  const inputarr[224, 224, 3] = {1, };
+  coral::ReadFileToOrDie(inputarr, input.data(), input.size());
           
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
   const auto& start_time = std::chrono::steady_clock::now();
