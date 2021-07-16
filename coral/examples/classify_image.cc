@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   //coral::ReadFileToOrDie(absl::GetFlag(FLAGS_image_path), input.data(),
   //                       input.size());
   const int inputarr[224][224][3] = { 1, };
-  coral::ReadFileToOrDie(inputarr, input.data(), input.size());
+  memcpy(*interpreter->input_tensor(0), inputarr, sizeof(inputarr)/sizeof(int))
           
   CHECK_EQ(interpreter->Invoke(), kTfLiteOk);
   const auto& start_time = std::chrono::steady_clock::now();
